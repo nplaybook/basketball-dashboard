@@ -1,6 +1,10 @@
-from flask import Flask
+import os, sys, inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
 
-from .team.team import team_bp
+from flask import Flask
+from app.team.team import team_bp
 
 app = Flask(__name__)
 
