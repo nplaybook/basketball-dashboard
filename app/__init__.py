@@ -7,7 +7,7 @@ from flask import Flask
 from app.team.team import team_bp
 
 app = Flask(__name__)
-
+app.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://<user>:<pwd>@localhost:<port>/<database_name>"
 app.register_blueprint(team_bp, url_prefix="/team")
 
 if __name__ == "__main__":
