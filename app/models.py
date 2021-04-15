@@ -1,52 +1,63 @@
-from flask_sqlalchemy import SQLAlchemy
-from app import app
+import os, sys, inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0, parentdir)
+
+from flask_script import Manager
+from flask_migrate import Migrate, MigrateCommand
+from app import app, db
 from datetime import datetime
 
-db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+manager = Manager(app)
+
+manager.add_command("db", MigrateCommand)
 
 class Position(db.Model):
     __tablename__ = "Positions"
     
     position_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(64), nullable=False)
+    name = db.Column(db.String(16), nullable=False)
     create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
-    positions = db.relationship("Player", backref="Position", lazy=True)
+    update_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    positions = db.relationship("Player", backref="pos")
 
-    def __init__(self, name, create_date):
+    def __init__(self, name):
         self.name = name
-        self.create_date = create_date
 
 class Player(db.Model):
     __tablename__ = "Players"
     
     player_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), nullable=False)
-    position_id = db.Column(db.Integer, db.ForeignKey("Position.position_id"), nullable=False)
+    position_id = db.Column(db.Integer, db.ForeignKey("Positions.position_id"), nullable=False)
     height = db.Column(db.String(8))
-    weight = db.Column(db.Float())
+    weight = db.Column(db.Float)
     experience_year = db.Column(db.Integer)
     jersey_number = db.Column(db.Integer)
     is_active = db.Column(db.Boolean)
     create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
     update_date = create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
-    # players = 
+    players = db.relationship("TradStats", backref="player_id")
+    players = db.relationship("AdvStats", backref="player_id")
+    players = db.relationship("AdvStats", backref="player_id")
 
-    def __init__(self, name, position_id, height, weight, experience_year, jersey_number, is_active, create_date, update_date):
+    def __init__(self, name, height, weight, experience_year, jersey_number, is_active):
         self.name = name
-        self.position_id = position_id
+        # self.position_id = position_id
         self.height = height
         self.weight = weight
         self.experience_year = experience_year
         self.jersey_number = jersey_number
         self.is_active = is_active
-        self.create_date = create_date
-        self.update_date = update_date
+        # self.create_date = create_date
+        # self.update_date = update_date
 
 class TradStats(db.Model):
     __tablename__ = "TraditionalStatistics"
     
-    traditional_statistics_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    player_id = db.Column(db.Integer, db.ForeignKey("Player.player_id"), nullable=False)
+    trad_stats_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    player_id = db.Column(db.Integer, db.ForeignKey("Players.player_id"), nullable=False)
     season = db.Column(db.Integer)
     game_played = db.Column(db.Integer)
     game_started = db.Column(db.Integer)
@@ -60,7 +71,7 @@ class TradStats(db.Model):
     two_point_made = db.Column(db.Integer)
     two_point_attemp = db.Column(db.Integer)
     two_point_percentage = db.Column(db.Float)
-    effective_field_goal = db.Colunn(db.Float)
+    effective_field_goal = db.Column(db.Float)
     free_throw_made = db.Column(db.Integer)
     free_throw_attemp = db.Column(db.Integer)
     free_throw_percentage = db.Column(db.Float)
@@ -75,12 +86,12 @@ class TradStats(db.Model):
     points = db.Column(db.Float)
     create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
-    def __init__(self, player_id, season, game_played, game_started, minute_play, field_goal_made, field_goal_attemp, field_goal_percentage, 
+    def __init__(self, season, game_played, game_started, minute_play, field_goal_made, field_goal_attemp, field_goal_percentage, 
     three_point_made, three_point_attemp, three_point_percentage, two_point_made, two_point_attemp, two_point_percentage, effective_field_goal,
     free_throw_made, free_throw_attemp, free_throw_percentage, offensive_rebound, defensive_rebound, total_rebound, assist, steal, block, turnover,
     personal_foul, points):
 
-        self.player_id = player_id
+        # self.player_id = player_id
         self.season = season
         self.game_played = game_played 
         self.game_started = game_started
@@ -111,8 +122,8 @@ class TradStats(db.Model):
 class AdvStats(db.Model):
     __tablename__ = "AdvanceStatistics"
     
-    advance_statistics_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    player_id = db.Column(db.Integer, db.ForeignKey("Player.player_id"), nullable=False)
+    adv_stats_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    player_id = db.Column(db.Integer, db.ForeignKey("Players.player_id"), nullable=False)
     season = db.Column(db.Integer)
     player_efficiency = db.Column(db.Float)
     true_shooting_percentage = db.Column(db.Float)
@@ -135,12 +146,12 @@ class AdvStats(db.Model):
     box_plus_minus = db.Column(db.Float)
     create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
-    def __init__(self, player_id, season, player_efficiency, true_shooting_percentage, three_point_attemp_rate, free_throw_attemp_rate, 
+    def __init__(self, season, player_efficiency, true_shooting_percentage, three_point_attemp_rate, free_throw_attemp_rate, 
     offensive_rebound_percentage, defensive_rebound_percentage, total_rebound_percentage, assist_percentage, steal_percentage, block_percentage, 
     turnover_percentage, usage_percentage, offensive_win_share, defensive_win_share, win_share, win_share_per_48, offensive_box_plus_minus, 
     defensive_box_plus_minus, box_plus_minus):
 
-        self.player_id = player_id
+        # self.player_id = player_id
         self.season = season
         self.player_efficiency = player_efficiency
         self.true_shooting_percentage = true_shooting_percentage
@@ -166,7 +177,7 @@ class ShootHistory(db.Model):
     __tablename__ = "ShootHistory"
     
     shoot_history_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    player_id = db.Column(db.Integer, db.ForeignKey("Player.player_id"), nullable=False)
+    player_id = db.Column(db.Integer, db.ForeignKey("Players.player_id"), nullable=False)
     # season = db.Column(db.Integer)
     loc_x = db.Column(db.Float, nullable=False)
     loc_y = db.Column(db.Float, nullable=False)
@@ -177,8 +188,8 @@ class ShootHistory(db.Model):
     game_date = db.Column(db.DateTime)
     create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
-    def __init__(self, player_id, loc_x, loc_y, distance, make_miss, value, quarter, game_date):
-        self.player_id = player_id
+    def __init__(self, loc_x, loc_y, distance, make_miss, value, quarter, game_date):
+        # self.player_id = player_id
         self.loc_x = loc_x
         self.loc_y = loc_y
         self.distance = distance
@@ -190,6 +201,7 @@ class ShootHistory(db.Model):
 class GameSchedule(db.Model):
     __tablename__ = "GameSchedule"
 
+    game_schedule_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     opponent_team = db.Column(db.String(32), nullable=False)
     game_date = db.Column(db.DateTime, nullable=False)
 
@@ -197,4 +209,5 @@ class GameSchedule(db.Model):
         self.opponent_team = opponent_team
         self.game_date = game_date
 
-db.create_all()
+if __name__ == "__main__":
+    manager.run()
