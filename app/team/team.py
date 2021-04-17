@@ -9,7 +9,7 @@ team_bp = Blueprint(name="team_bp", import_name=__name__)
 def standing():
     current_standing = get_standings()["Eastern Conference"]
     current_standing = (current_standing
-                            .query("`Eastern Conference` == 'Milwaukee Bucks'") # team name to config
+                            .query("`Eastern Conference` == 'Milwaukee Bucks'")
                             .reset_index(drop=False)
                         )
 
@@ -22,13 +22,12 @@ def standing():
                 "lose": int(current_standing.loc[0, "L"]),
                 "percentage": float(current_standing.loc[0, "W/L%"]),
                 "game_back": float(current_standing.loc[0, "GB"])
-                # add upcoming game schedule
             } 
         })
 
 @team_bp.route("/roster")
 def roster():
-    team_roster = get_roster(team="MIL", season=2021) #team abbv to config, season to os
+    team_roster = get_roster(team="MIL", season=2021) 
     roster_list = []
     for row in range(len(team_roster)):
         player = {
