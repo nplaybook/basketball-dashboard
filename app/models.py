@@ -13,45 +13,23 @@ manager = Manager(app)
 
 manager.add_command("db", MigrateCommand)
 
-class Position(db.Model):
-    __tablename__ = "Positions"
-    
-    position_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(16), nullable=False)
-    create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
-    update_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
-    positions = db.relationship("Player", backref="pos")
-
-    def __init__(self, name):
-        self.name = name
-
 class Player(db.Model):
     __tablename__ = "Players"
     
     player_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), nullable=False)
-    position_id = db.Column(db.Integer, db.ForeignKey("Positions.position_id"), nullable=False)
-    height = db.Column(db.String(8))
-    weight = db.Column(db.Float)
-    experience_year = db.Column(db.Integer)
-    jersey_number = db.Column(db.Integer)
+    name_lower = db.Column(db.String(128), nullable=False)
     is_active = db.Column(db.Boolean)
     create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
-    update_date = create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    update_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
     players = db.relationship("TradStats", backref="player_id")
     players = db.relationship("AdvStats", backref="player_id")
     players = db.relationship("AdvStats", backref="player_id")
 
-    def __init__(self, name, height, weight, experience_year, jersey_number, is_active):
+    def __init__(self, name, lower_name, is_active):
         self.name = name
-        # self.position_id = position_id
-        self.height = height
-        self.weight = weight
-        self.experience_year = experience_year
-        self.jersey_number = jersey_number
+        self.lower_name = lower_name
         self.is_active = is_active
-        # self.create_date = create_date
-        # self.update_date = update_date
 
 class TradStats(db.Model):
     __tablename__ = "TraditionalStatistics"
@@ -91,7 +69,7 @@ class TradStats(db.Model):
     free_throw_made, free_throw_attemp, free_throw_percentage, offensive_rebound, defensive_rebound, total_rebound, assist, steal, block, turnover,
     personal_foul, points):
 
-        # self.player_id = player_id
+        self.player_id = player_id
         self.season = season
         self.game_played = game_played 
         self.game_started = game_started
@@ -151,7 +129,7 @@ class AdvStats(db.Model):
     turnover_percentage, usage_percentage, offensive_win_share, defensive_win_share, win_share, win_share_per_48, offensive_box_plus_minus, 
     defensive_box_plus_minus, box_plus_minus):
 
-        # self.player_id = player_id
+        self.player_id = player_id
         self.season = season
         self.player_efficiency = player_efficiency
         self.true_shooting_percentage = true_shooting_percentage
@@ -189,7 +167,7 @@ class ShootHistory(db.Model):
     create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
     def __init__(self, loc_x, loc_y, distance, make_miss, value, quarter, game_date):
-        # self.player_id = player_id
+        self.player_id = player_id
         self.loc_x = loc_x
         self.loc_y = loc_y
         self.distance = distance
