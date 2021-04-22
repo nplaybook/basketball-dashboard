@@ -1,6 +1,6 @@
 __pycache__/
 env/
-experiment/
+notebook/
 migrations/
 .ipynb_checkpoints
 .env
