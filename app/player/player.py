@@ -1,19 +1,27 @@
 import time
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request, redirect, url_for
 from basketball_reference_scraper.players import get_stats
 from basketball_reference_scraper.teams import get_roster
 
 player_bp = Blueprint(name="player_bp", import_name=__name__)
 
-@player_bp.route("/career", methods=["GET"])
-def get_player_stats():
+@player_bp.route("/search", methods=["POST"])
+def search():
+    if request.method == "POST":
+        player_name = request.json["player"]
+        print(player_name)
+        return redirect(url_for("player_bp.get_player_stats", name=player_name))
+
+@player_bp.route("/<name>", methods=["GET"])
+def get_player_stats(name):
     start = time.time()
     try:
-        player = get_stats(name="Zach LaVine", stat_type="PER_GAME", playoffs=False, career=True)
+        player = get_stats(name=name, stat_type="PER_GAME", playoffs=False, career=True)
     except:
         return jsonify({
             "status": 505,
-            "message": "Fail fetch player information"
+            "message": "Fail fetch player information",
+            "execution_time": f"{round(time.time() - start, 2)} s"
         })
     else:
         player_stats = {
@@ -39,7 +47,8 @@ def get_player_bio():
     except:
         return jsonify({
             "status": 505,
-            "message": "Fail fetch player information"
+            "message": "Fail fetch player information",
+            "execution_time": f"{round(time.time() - start, 2)} s"
         })
     else:
         player_info = team_roster.query("PLAYER == 'Zach LaVine'")
@@ -54,5 +63,6 @@ def get_player_bio():
         return jsonify({
             "status": 200,
             "message": "OK",
+            "execution_time": f"{round(time.time() - start, 2)} s",
             "query": player_info
         })
