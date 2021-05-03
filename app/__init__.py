@@ -7,14 +7,12 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app.player.player import player_bp
-from app.team.team import team_bp
 
 load_dotenv()
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URI"]
-app.register_blueprint(team_bp, url_prefix="/team")
-app.register_blueprint(player_bp, url_prefix="/player")
+app.register_blueprint(player_bp, url_prefix="/players")
 
 db = SQLAlchemy(app)
 

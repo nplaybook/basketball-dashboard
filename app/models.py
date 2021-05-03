@@ -19,12 +19,13 @@ class Player(db.Model):
     player_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(128), nullable=False)
     name_lower = db.Column(db.String(128), nullable=False)
-    is_active = db.Column(db.Boolean)
+    href = db.Column(db.Text)
+    is_active = db.Column(db.Boolean, default=True)
     create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
     update_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
-    players = db.relationship("TradStats", backref="player_id")
-    players = db.relationship("AdvStats", backref="player_id")
-    players = db.relationship("AdvStats", backref="player_id")
+    players = db.relationship("TradStats", backref="player_id", lazy=True)
+    players = db.relationship("AdvStats", backref="player_id", lazy=True)
+    players = db.relationship("AdvStats", backref="player_id", lazy=True)
 
     def __init__(self, name, lower_name, is_active):
         self.name = name
