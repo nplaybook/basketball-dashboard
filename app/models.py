@@ -21,15 +21,16 @@ class Player(db.Model):
     name_lower = db.Column(db.String(128), nullable=False)
     href = db.Column(db.Text)
     is_active = db.Column(db.Boolean, default=True)
-    create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
-    update_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
     players = db.relationship("TradStats", backref="player_id", lazy=True)
     players = db.relationship("AdvStats", backref="player_id", lazy=True)
     players = db.relationship("AdvStats", backref="player_id", lazy=True)
 
-    def __init__(self, name, lower_name, is_active):
+    def __init__(self, name, lower_name, href, is_active):
         self.name = name
         self.lower_name = lower_name
+        self.href = href
         self.is_active = is_active
 
 class TradStats(db.Model):
@@ -63,7 +64,8 @@ class TradStats(db.Model):
     turnover = db.Column(db.Float)
     personal_foul = db.Column(db.Float)
     points = db.Column(db.Float)
-    create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
     def __init__(self, season, game_played, game_started, minute_play, field_goal_made, field_goal_attemp, field_goal_percentage, 
     three_point_made, three_point_attemp, three_point_percentage, two_point_made, two_point_attemp, two_point_percentage, effective_field_goal,
@@ -123,7 +125,8 @@ class AdvStats(db.Model):
     offensive_box_plus_minus = db.Column(db.Float)
     defensive_box_plus_minus = db.Column(db.Float)
     box_plus_minus = db.Column(db.Float)
-    create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
     def __init__(self, season, player_efficiency, true_shooting_percentage, three_point_attemp_rate, free_throw_attemp_rate, 
     offensive_rebound_percentage, defensive_rebound_percentage, total_rebound_percentage, assist_percentage, steal_percentage, block_percentage, 
@@ -165,7 +168,8 @@ class ShootHistory(db.Model):
     value = db.Column(db.Integer)
     quarter = db.Column(db.Integer)
     game_date = db.Column(db.DateTime)
-    create_date = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.now(), nullable=False)
 
     def __init__(self, loc_x, loc_y, distance, make_miss, value, quarter, game_date):
         self.player_id = player_id
