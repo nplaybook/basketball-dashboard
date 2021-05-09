@@ -6,7 +6,7 @@ sys.path.insert(0, parentdir)
 from dotenv import load_dotenv
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from app.player.player import player_bp
+from app.routes.player import player_bp
 
 load_dotenv()
 
